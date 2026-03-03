@@ -5,15 +5,18 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/constants.dart';
 import 'core/supabase_client.dart';
+import 'core/services/supabase_service.dart';
 import 'core/theme.dart';
 import 'features/auth/presentation/auth_controller.dart';
 import 'features/auth/presentation/auth_screen.dart';
 import 'features/child_profiles/presentation/child_profile_controller.dart';
 import 'features/child_profiles/presentation/create_child_profile_screen.dart';
+import 'features/home/presentation/home_screen.dart';
 
 Future<void> main() async {
   await initializeDateFormatting('tr_TR');
   await initializeSupabase();
+  await SupabaseService(supabaseClient).initCheck();
   runApp(const ProviderScope(child: KiduApp()));
 }
 
@@ -65,39 +68,10 @@ class AuthGate extends ConsumerWidget {
             if (!exists) {
               return const CreateChildProfileScreen();
             }
-            return const DashboardPlaceholder();
+            return const HomeScreen();
           },
         );
       },
-    );
-  }
-}
-
-class DashboardPlaceholder extends ConsumerWidget {
-  const DashboardPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kidu'),
-        actions: [
-          IconButton(
-            onPressed: () =>
-                ref.read(authControllerProvider.notifier).signOut(),
-            icon: const Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(
-            'Çocuk profili hazır. Sıradaki adımda hastalık ve semptom takibi ekranlarını ekleyeceğiz.',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
     );
   }
 }

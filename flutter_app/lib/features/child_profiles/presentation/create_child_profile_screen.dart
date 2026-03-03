@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../home/presentation/home_screen.dart';
 import 'child_profile_controller.dart';
 
 class CreateChildProfileScreen extends ConsumerStatefulWidget {
@@ -72,8 +73,9 @@ class _CreateChildProfileScreenState
         );
       },
       data: (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Çocuk profili oluşturuldu.')),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute<void>(builder: (_) => const HomeScreen()),
+          (route) => false,
         );
       },
     );

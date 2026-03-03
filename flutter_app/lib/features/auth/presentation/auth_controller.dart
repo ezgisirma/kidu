@@ -23,32 +23,63 @@ final currentSessionProvider = Provider<Session?>((ref) {
   return ref.read(supabaseClientProvider).auth.currentSession;
 });
 
+enum AuthActionResult {
+  signedIn,
+  signedUpAndSignedIn,
+  signedUpNeedsEmailVerification,
+}
+
 class AuthController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> signIn({required String email, required String password}) async {
+  Future<AuthActionResult> signIn({
+    required String email,
+    required String password,
+  }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final response = await ref
           .read(authRepositoryProvider)
           .signIn(email: email.trim(), password: password);
       debugPrint(
         '[AUTH][SIGNIN] userId=${response.user?.id} session=${response.session != null}',
       );
-    });
+
+      if (response.session == null) {
+        throw const AuthException('Giriş oturumu oluşturulamadı.');
+      }
+
+      state = const AsyncData(null);
+      return AuthActionResult.signedIn;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
   }
 
-  Future<void> signUp({required String email, required String password}) async {
+  Future<AuthActionResult> signUp({
+    required String email,
+    required String password,
+  }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final response = await ref
           .read(authRepositoryProvider)
           .signUp(email: email.trim(), password: password);
       debugPrint(
         '[AUTH][SIGNUP] userId=${response.user?.id} session=${response.session != null}',
       );
-    });
+
+      state = const AsyncData(null);
+      if (response.session != null) {
+        return AuthActionResult.signedUpAndSignedIn;
+      }
+      return AuthActionResult.signedUpNeedsEmailVerification;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
   }
 
   Future<void> signOut() async {
