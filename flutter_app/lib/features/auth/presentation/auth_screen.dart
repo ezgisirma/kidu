@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../child_profiles/presentation/create_child_profile_screen.dart';
 import 'auth_controller.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -49,6 +50,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ).showSnackBar(SnackBar(content: Text('İşlem başarısız: $error')));
       },
       data: (_) {
+        final hasSession = ref.read(currentSessionProvider) != null;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -58,6 +60,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             ),
           ),
         );
+
+        if (!_isSignIn && hasSession) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(
+              builder: (_) => const CreateChildProfileScreen(),
+            ),
+          );
+        }
       },
     );
   }

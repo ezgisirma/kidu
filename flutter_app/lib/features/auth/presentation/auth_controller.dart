@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,20 +29,26 @@ class AuthController extends AsyncNotifier<void> {
 
   Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
+    state = await AsyncValue.guard(() async {
+      final response = await ref
           .read(authRepositoryProvider)
-          .signIn(email: email.trim(), password: password),
-    );
+          .signIn(email: email.trim(), password: password);
+      debugPrint(
+        '[AUTH][SIGNIN] userId=${response.user?.id} session=${response.session != null}',
+      );
+    });
   }
 
   Future<void> signUp({required String email, required String password}) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
+    state = await AsyncValue.guard(() async {
+      final response = await ref
           .read(authRepositoryProvider)
-          .signUp(email: email.trim(), password: password),
-    );
+          .signUp(email: email.trim(), password: password);
+      debugPrint(
+        '[AUTH][SIGNUP] userId=${response.user?.id} session=${response.session != null}',
+      );
+    });
   }
 
   Future<void> signOut() async {

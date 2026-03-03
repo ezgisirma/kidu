@@ -5,12 +5,18 @@ class AuthRepository {
 
   final SupabaseClient _client;
 
-  Future<void> signIn({required String email, required String password}) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
+  Future<AuthResponse> signIn({
+    required String email,
+    required String password,
+  }) async {
+    return _client.auth.signInWithPassword(email: email, password: password);
   }
 
-  Future<void> signUp({required String email, required String password}) async {
-    await _client.auth.signUp(email: email, password: password);
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+  }) async {
+    return _client.auth.signUp(email: email, password: password);
   }
 
   Future<void> signOut() async {
